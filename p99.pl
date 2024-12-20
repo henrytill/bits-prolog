@@ -1,6 +1,8 @@
 %! P-99: Ninety-Nine Prolog Problems
 %  @see https://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/
 
+:- module(p99, [my_last/2, penultimate/2, element_at/3]).
+
 %% P01: Find the last element of a list.
 my_last(X, [X]).
 my_last(X, [_|Y]) :- my_last(X, Y).
