@@ -1,7 +1,7 @@
 %! P-99: Ninety-Nine Prolog Problems
 %  @see https://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/
 
-:- module(p99, [my_last/2, penultimate/2, element_at/3]).
+:- module(p99, [my_last/2, penultimate/2, element_at/3, my_length/2]).
 
 %% P01: Find the last element of a list.
 my_last(X, [X]).
@@ -53,3 +53,18 @@ element_at(X, [_|Y], K) :-
 
 %?- element_at(X, [a,b,c,d,e], 0).
 %@ false.
+
+%% P04: Find the number of elements of a list.
+my_length(0, []).
+my_length(Count, [_|Tail]) :-
+    my_length(TailCount, Tail),
+    Count is TailCount + 1.
+
+%?- my_length(X, []).
+%@ X = 0.
+
+%?- my_length(X, [1]).
+%@ X = 1.
+
+%?- my_length(X, [0,1,2,3,4,5]).
+%@ X = 6.

@@ -29,7 +29,13 @@ tests([ test("my_last: basic",
         test("element_at: empty list",
              \+ element_at(_, [], 1)),
         test("element_at: out of bounds",
-             \+ element_at(_, [a,b], 3))
+             \+ element_at(_, [a,b], 3)),
+        test("my_length: empty list",
+             my_length(0, [])),
+        test("my_length: singleton list",
+             my_length(1, [a])),
+        test("my_length: basic",
+             my_length(6, [a,b,c,d,e,f]))
       ]).
 
 main :-
