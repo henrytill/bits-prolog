@@ -36,8 +36,8 @@ penultimate(X, [_|Y]) :- penultimate(X, Y).
 element_at(X, [X|_], 1).
 element_at(X, [_|Y], K) :-
     K > 1,
-    K1 is K - 1,
-    element_at(X, Y, K1).
+    J is K - 1,
+    element_at(X, Y, J).
 
 %?- element_at(X, [a,b,c,d,e], 3).
 %@ X = c .
