@@ -1,10 +1,9 @@
 :- use_module(p99).
 
 test(Name, Body) :-
-    format('Running test: ~w~n', [Name]),
     ( call(Body) ->
-      format('✓ ~w passed~n', [Name])
-    ; format('✗ ~w failed~n', [Name]),
+      format('✓ PASSED: ~w~n', [Name])
+    ; format('✗ FAILED: ~w~n', [Name]),
       fail
     ).
 
