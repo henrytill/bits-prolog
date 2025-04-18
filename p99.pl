@@ -5,7 +5,8 @@
           [ my_last/2,
             penultimate/2,
             element_at/3,
-            my_length/2
+            my_length/2,
+            my_reverse/2
           ]).
 
 %% P01: Find the last element of a list.
@@ -28,3 +29,9 @@ my_length(0, []).
 my_length(Count, [_|Tail]) :-
     my_length(TailCount, Tail),
     Count is TailCount + 1.
+
+%% P05: Reverse a list.
+my_reverse(List, Reversed) :- reverse_acc(List, [], Reversed).
+
+reverse_acc([], Acc, Acc).
+reverse_acc([Head|Tail], Acc, Result) :- reverse_acc(Tail, [Head|Acc], Result).

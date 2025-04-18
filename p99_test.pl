@@ -34,7 +34,15 @@ tests([ test("my_last: basic",
         test("my_length: singleton list",
              my_length(1, [a])),
         test("my_length: basic",
-             my_length(6, [a,b,c,d,e,f]))
+             my_length(6, [a,b,c,d,e,f])),
+        test("my_reverse: empty list",
+             my_reverse([], [])),
+        test("my_reverse: singleton list",
+             my_reverse([a], [a])),
+        test("my_reverse: two-element list",
+             my_reverse([a,b], [b,a])),
+        test("my_reverse: basic",
+             my_reverse([f,e,d,c,b,a], [a,b,c,d,e,f]))
       ]).
 
 main :-
