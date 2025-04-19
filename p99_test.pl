@@ -42,7 +42,13 @@ tests([ test("my_last: basic",
         test("my_reverse: two-element list",
              my_reverse([a,b], [b,a])),
         test("my_reverse: basic",
-             my_reverse([f,e,d,c,b,a], [a,b,c,d,e,f]))
+             my_reverse([f,e,d,c,b,a], [a,b,c,d,e,f])),
+        test("is_palindrome: empty list",
+             is_palindrome([])),
+        test("is_palindrome: non-palindrome is false",
+             \+ is_palindrome([a,b,c,d,e,f])),
+        test("is_palindrome: basic",
+             is_palindrome([x,a,m,a,x]))
       ]).
 
 main :-

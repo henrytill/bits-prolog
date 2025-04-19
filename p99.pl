@@ -6,7 +6,8 @@
             penultimate/2,
             element_at/3,
             my_length/2,
-            my_reverse/2
+            my_reverse/2,
+            is_palindrome/1
           ]).
 
 %% P01: Find the last element of a list.
@@ -35,3 +36,6 @@ my_reverse(List, Reversed) :- reverse_acc(List, [], Reversed).
 
 reverse_acc([], Acc, Acc).
 reverse_acc([Head|Tail], Acc, Result) :- reverse_acc(Tail, [Head|Acc], Result).
+
+%% P06: Find out whether a list is a palindrome.
+is_palindrome(List) :- my_reverse(List, List).
