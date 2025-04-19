@@ -32,10 +32,10 @@ my_length(Count, [_|Tail]) :-
     Count is TailCount + 1.
 
 %% P05: Reverse a list.
-my_reverse(List, Reversed) :- reverse_acc(List, [], Reversed).
+my_reverse(List, Reversed) :- my_reverse_acc(List, [], Reversed).
 
-reverse_acc([], Acc, Acc).
-reverse_acc([Head|Tail], Acc, Result) :- reverse_acc(Tail, [Head|Acc], Result).
+my_reverse_acc([], Acc, Acc).
+my_reverse_acc([Head|Tail], Acc, Result) :- my_reverse_acc(Tail, [Head|Acc], Result).
 
 %% P06: Find out whether a list is a palindrome.
 is_palindrome(List) :- my_reverse(List, List).
