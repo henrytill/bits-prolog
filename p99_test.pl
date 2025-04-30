@@ -1,3 +1,5 @@
+%% -*- mode: prolog; -*-
+
 :- use_module(p99).
 
 test(Name, Body) :-

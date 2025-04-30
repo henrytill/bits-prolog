@@ -1,3 +1,5 @@
+%% -*- mode: prolog; -*-
+
 %! P-99: Ninety-Nine Prolog Problems
 %  @see https://www.ic.unicamp.br/~meidanis/courses/mc336/2009s2/prolog/problemas/
 
