@@ -50,7 +50,19 @@ tests([ test("my_last: basic",
         test("is_palindrome: non-palindrome is false",
              \+ is_palindrome([a,b,c,d,e,f])),
         test("is_palindrome: basic",
-             is_palindrome([x,a,m,a,x]))
+             is_palindrome([x,a,m,a,x])),
+        test("my_flatten: basic",
+             my_flatten([a, [b, [c, d], e]], [a,b,c,d,e])),
+        test("is_list: empty list",
+             is_list([])),
+        test("is_list: single-element list",
+             is_list([a])),
+        test("is_list: basic",
+             is_list([a,b,c,d,e])),
+        test("is_list: non-list",
+             \+ is_list(1)),
+        test("my_append: basic",
+             my_append([1,2], [3,4], [1,2,3,4]))
       ]).
 
 main :-
