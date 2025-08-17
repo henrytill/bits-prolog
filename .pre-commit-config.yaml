@@ -1,0 +1,15 @@
+repos:
+  - repo: local
+    hooks:
+      - id: prolog-tests
+        name: Run Prolog tests
+        entry: ./test.sh
+        language: script
+        files: \.pl$
+        pass_filenames: false
+      - id: prolog-tags
+        name: Generate Prolog TAGS file
+        entry: ./gentags.sh
+        language: script
+        files: \.pl$
+        pass_filenames: false
