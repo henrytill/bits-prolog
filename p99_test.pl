@@ -62,7 +62,11 @@ tests([ test("my_last: basic",
         test("is_list: non-list",
              \+ is_list(1)),
         test("my_append: basic",
-             my_append([1,2], [3,4], [1,2,3,4]))
+             my_append([1,2], [3,4], [1,2,3,4])),
+        test("my_append: left empty",
+             my_append([], [3,4], [3,4])),
+        test("my_append: right empty",
+             my_append([1,2], [], [1,2]))
       ]).
 
 main :-
