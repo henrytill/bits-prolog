@@ -93,14 +93,13 @@ is_list([_|_]).
 my_append([], Ys, Ys).
 my_append([X|Xs], Ys, [X|Zs]) :- my_append(Xs, Ys, Zs).
 
-%!  compress(+Uncompressed, -Compressed) is multi.
+%!  compress(+Uncompressed, -Compressed) is det.
 %
 %   P08: Eliminate consecutive duplicates of list elements.
 
-compress(Uncompressed, Compressed) :-
-    compress_acc(Uncompressed, [], Acc),
-    my_reverse(Acc, Compressed).
+compress([], []).
+compress([X|Xs], [X|Ys]) :- compress_skip_dups(X, Xs, Rest), compress(Rest, Ys).
 
-compress_acc([], Acc, Acc).
-compress_acc([Head|Tail], [Head|Acc], Result) :- compress_acc(Tail, [Head|Acc], Result).
-compress_acc([Head|Tail], Acc, Result) :- compress_acc(Tail, [Head|Acc], Result).
+compress_skip_dups(_, [], []).
+compress_skip_dups(X, [X|Xs], Rest) :- compress_skip_dups(X, Xs, Rest).
+compress_skip_dups(X, [Y|Xs], [Y|Xs]) :- X \== Y.
