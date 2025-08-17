@@ -66,7 +66,9 @@ tests([ test("my_last: basic",
         test("my_append: left empty",
              my_append([], [3,4], [3,4])),
         test("my_append: right empty",
-             my_append([1,2], [], [1,2]))
+             my_append([1,2], [], [1,2])),
+        test("compress: example",
+             compress([a,a,a,a,b,c,c,a,a,d,e,e,e,e], [a,b,c,a,d,e]))
       ]).
 
 main :-

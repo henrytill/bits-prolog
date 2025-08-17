@@ -12,7 +12,8 @@
             is_palindrome/1,
             my_flatten/2,
             is_list/1,
-            my_append/3
+            my_append/3,
+            compress/2
           ]).
 
 %% P01: Find the last element of a list.
@@ -61,3 +62,12 @@ is_list([_|_]).
 
 my_append([], Ys, Ys).
 my_append([X|Xs], Ys, [X|Zs]) :- my_append(Xs, Ys, Zs).
+
+%% P08: Eliminate consecutive duplicates of list elements.
+compress(Uncompressed, Compressed) :-
+    compress_acc(Uncompressed, [], Acc),
+    my_reverse(Acc, Compressed).
+
+compress_acc([], Acc, Acc).
+compress_acc([Head|Tail], [Head|Acc], Result) :- compress_acc(Tail, [Head|Acc], Result).
+compress_acc([Head|Tail], Acc, Result) :- compress_acc(Tail, [Head|Acc], Result).
