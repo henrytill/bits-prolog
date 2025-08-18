@@ -6,8 +6,8 @@
 :- use_module(p99).
 :- endif.
 
-write_test_result(passed, Name) :- write('✓ PASSED: '), write(Name), nl.
-write_test_result(failed, Name) :- write('✗ FAILED: '), write(Name), nl.
+write_test_result(passed, Name) :- write('PASSED: '), write(Name), nl.
+write_test_result(failed, Name) :- write('FAILED: '), write(Name), nl.
 
 test(Name, Body) :-
     ( call(Body) ->
