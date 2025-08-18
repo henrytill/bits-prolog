@@ -16,17 +16,6 @@ test(Name, Body) :-
       fail
     ).
 
-run_all_tests([]).
-run_all_tests([test(Name, Body)|Tests]) :-
-    test(Name, Body),
-    run_all_tests(Tests).
-
-run_tests(Tests) :-
-    ( run_all_tests(Tests) ->
-      halt(0)
-    ; halt(1)
-    ).
-
 tests([ test('my_last: basic',
              my_last(d, [a,b,c,d])),
         test('my_last: empty',
@@ -75,8 +64,14 @@ tests([ test('my_last: basic',
              compress([a,a,a,a,b,c,c,a,a,d,e,e,e,e], [a,b,c,a,d,e]))
       ]).
 
-main :-
+run_tests([]).
+run_tests([test(Name, Body)|Tests]) :-
+    test(Name, Body),
+    run_tests(Tests).
+
+test_all :-
     tests(T),
     run_tests(T).
 
-:- initialization(main).
+main :- test_all, halt(0).
+main :- halt(1).
