@@ -66,7 +66,7 @@
           };
         lib = pkgs.lib;
         shells = lib.mapAttrs genShell (configs pkgs);
-        checks = lib.genAttrs (lib.attrNames (configs pkgs)) (name: pkgs.${name});
+        checks = lib.mapAttrs (name: _: pkgs.${name}) (configs pkgs);
       in
       {
         inherit checks;
