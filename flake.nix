@@ -12,7 +12,7 @@
       ...
     }:
     let
-      prologConfigs = pkgs: {
+      configs = pkgs: {
         bits-gprolog = {
           buildInputs = [ pkgs.gprolog ];
           checkPhase = "${pkgs.gprolog}/bin/gprolog --consult-file p99_test.pl --query-goal main";
@@ -48,7 +48,7 @@
               '';
             };
         in
-        (prev.lib.mapAttrs (name: config: genBits name config) (prologConfigs final));
+        (prev.lib.mapAttrs genBits (configs final));
     in
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -64,10 +64,11 @@
           pkgs.mkShell {
             buildInputs = config.buildInputs ++ [ (genScript name config) ];
           };
-        shells = (pkgs.lib.mapAttrs genShell (prologConfigs pkgs));
-        checks = (pkgs.lib.mapAttrs (name: _: pkgs.${name}) (prologConfigs pkgs));
+        lib = pkgs.lib;
+        shells = lib.mapAttrs genShell (configs pkgs);
+        checks = lib.genAttrs (lib.attrNames (configs pkgs)) (name: pkgs.${name});
       in
-      rec {
+      {
         inherit checks;
         devShells = shells // {
           default = shells.bits-swipl;
