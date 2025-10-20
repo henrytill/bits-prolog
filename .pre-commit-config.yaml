@@ -9,7 +9,7 @@ repos:
         pass_filenames: false
       - id: prolog-tags
         name: Generate Prolog TAGS file
-        entry: ./gentags.sh
-        language: script
+        entry: generate-etags
+        language: system
         files: \.pl$
         pass_filenames: false

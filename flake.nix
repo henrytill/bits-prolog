@@ -59,10 +59,22 @@
         };
         genScript =
           name: config: pkgs.writeShellScriptBin "test-${name}" ("set -o errexit\n" + config.checkPhase);
-        genShell =
+        generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
+          set -o errexit
+          ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/etags -l prolog
+        '';
+        generateCtagsScript = pkgs.writeShellScriptBin "generate-ctags" ''
+          set -o errexit
+          ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/ctags -l prolog
+        '';
+       genShell =
           name: config:
           pkgs.mkShell {
-            buildInputs = config.buildInputs ++ [ (genScript name config) ];
+            buildInputs = config.buildInputs ++ [
+              (genScript name config)
+              generateCtagsScript
+              generateEtagsScript
+            ];
           };
         lib = pkgs.lib;
         shells = lib.mapAttrs genShell (configs pkgs);
