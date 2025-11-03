@@ -67,7 +67,7 @@
         genShell =
           name: config:
           pkgs.mkShell {
-            buildInputs = config.buildInputs ++ [
+            packages = config.buildInputs ++ [
               pkgs.pre-commit
               (genScript name config)
               generateCtagsScript
