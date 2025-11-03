@@ -3,8 +3,8 @@ repos:
     hooks:
       - id: prolog-tests
         name: Run Prolog tests
-        entry: ./test.sh
-        language: script
+        entry: test-bits
+        language: system
         files: \.pl$
         pass_filenames: false
       - id: prolog-tags
