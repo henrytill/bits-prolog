@@ -29,10 +29,7 @@
       overlay =
         final: prev:
         let
-          src = builtins.path {
-            path = ./.;
-            name = "bits-src";
-          };
+          src = self;
           genBits =
             name:
             { buildInputs, checkPhase }:
