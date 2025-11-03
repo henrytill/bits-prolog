@@ -67,7 +67,7 @@
           set -o errexit
           ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/ctags -l prolog
         '';
-       genShell =
+        genShell =
           name: config:
           pkgs.mkShell {
             buildInputs = config.buildInputs ++ [
