@@ -8,8 +8,8 @@ repos:
         files: \.pl$
         pass_filenames: false
       - id: prolog-tags
-        name: Generate Prolog TAGS file
-        entry: generate-etags
+        name: Generate Prolog tags file
+        entry: generate-ctags
         language: system
         files: \.pl$
         pass_filenames: false

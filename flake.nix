@@ -34,10 +34,12 @@
             name:
             { buildInputs, checkPhase }:
             final.stdenvNoCC.mkDerivation {
-              inherit name;
-              inherit src;
-              inherit buildInputs;
-              inherit checkPhase;
+              inherit
+                name
+                src
+                buildInputs
+                checkPhase
+                ;
               dontBuild = true;
               doCheck = true;
               installPhase = ''
