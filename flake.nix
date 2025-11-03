@@ -56,8 +56,8 @@
           inherit system;
           overlays = [ overlay ];
         };
-        genScript =
-          name: config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
+        genTestScript =
+          config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
           set -o errexit
           ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/etags -l prolog
@@ -71,7 +71,7 @@
           pkgs.mkShell {
             packages = config.buildInputs ++ [
               pkgs.pre-commit
-              (genScript name config)
+              (genTestScript config)
               generateCtagsScript
               generateEtagsScript
             ];
