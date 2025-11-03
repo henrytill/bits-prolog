@@ -1,5 +1,5 @@
 % -*- mode: prolog; -*-
-% vim: set filetype=prolog:
+% vim: set ft=prolog:
 
 :- module(p99,
           [ my_last/2,

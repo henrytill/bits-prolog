@@ -1,5 +1,5 @@
 % -*- mode: prolog; -*-
-% vim: set filetype=prolog:
+% vim: set ft=prolog:
 
 :- if(current_prolog_flag(dialect, gprolog)).
 :- include('p99_core.pl').

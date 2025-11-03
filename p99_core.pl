@@ -1,5 +1,5 @@
 % -*- mode: prolog; -*-
-% vim: set filetype=prolog:
+% vim: set ft=prolog:
 
 /** <module> P-99: Ninety-Nine Prolog Problems
 
