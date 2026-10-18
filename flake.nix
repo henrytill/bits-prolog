@@ -27,7 +27,17 @@
         };
         bits-trealla = {
           packages = [ pkgs.trealla ];
-          checkPhase = "${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main";
+          # tpl reports load errors only on stderr, and still exits 0
+          checkPhase = ''
+            { errors=$(${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
+            if [ -n "$errors" ]; then
+              printf '%s\n' "$errors" >&2
+              if ${pkgs.lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
+                exit 1
+              fi
+            fi
+            exit "''${status:-0}"
+          '';
         };
       };
     in
