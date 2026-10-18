@@ -23,7 +23,7 @@
         };
         bits-swipl = {
           packages = [ pkgs.swi-prolog ];
-          checkPhase = "${pkgs.lib.getExe pkgs.swi-prolog} -s p99_test.pl -g main";
+          checkPhase = "${pkgs.lib.getExe pkgs.swi-prolog} --on-error=halt -s p99_test.pl -g main";
         };
         bits-trealla = {
           packages = [ pkgs.trealla ];
