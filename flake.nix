@@ -23,17 +23,17 @@
         configs = {
           bits-gprolog = {
             packages = [ pkgs.gprolog ];
-            checkPhase = "${lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main --query-goal 'halt(1)'";
+            testScript = "gprolog --consult-file p99_test.pl --query-goal main --query-goal 'halt(1)'";
           };
           bits-swipl = {
             packages = [ pkgs.swi-prolog ];
-            checkPhase = "${lib.getExe pkgs.swi-prolog} --on-error=halt -s p99_test.pl -g main";
+            testScript = "swipl --on-error=halt -s p99_test.pl -g main";
           };
           bits-trealla = {
             packages = [ pkgs.trealla ];
             # tpl reports load errors only on stderr, and still exits 0
-            checkPhase = ''
-              { errors=$(${lib.getExe pkgs.trealla} p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
+            testScript = ''
+              { errors=$(tpl p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
               if [ -n "$errors" ]; then
                 printf '%s\n' "$errors" >&2
                 if ${lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
@@ -49,7 +49,7 @@
           pkgs.writeShellApplication {
             name = "test-bits";
             runtimeInputs = config.packages;
-            text = config.checkPhase;
+            text = config.testScript;
           };
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
           set -o errexit
