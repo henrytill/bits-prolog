@@ -8,10 +8,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux-flake:
+  matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - run: nix flake check --no-build
+      - id: set-matrix
+        run: echo "matrix=$(nix eval --json .#githubActions.matrix)" >> "$GITHUB_OUTPUT"
+
+  check:
+    needs: matrix
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
-      - run: nix flake check -L
+      - run: nix build -L '.#${{ matrix.attr }}'
