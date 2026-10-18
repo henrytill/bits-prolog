@@ -18,15 +18,15 @@
     let
       configs = pkgs: {
         bits-gprolog = {
-          buildInputs = [ pkgs.gprolog ];
+          packages = [ pkgs.gprolog ];
           checkPhase = "${pkgs.lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main";
         };
         bits-swipl = {
-          buildInputs = [ pkgs.swi-prolog ];
+          packages = [ pkgs.swi-prolog ];
           checkPhase = "${pkgs.lib.getExe pkgs.swi-prolog} -s p99_test.pl -g main";
         };
         bits-trealla = {
-          buildInputs = [ pkgs.trealla ];
+          packages = [ pkgs.trealla ];
           checkPhase = "${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main";
         };
       };
@@ -38,13 +38,9 @@
         lib = pkgs.lib;
         genBits =
           name:
-          { buildInputs, checkPhase }:
+          { checkPhase, ... }:
           pkgs.stdenvNoCC.mkDerivation {
-            inherit
-              name
-              buildInputs
-              checkPhase
-              ;
+            inherit name checkPhase;
             src = lib.fileset.toSource {
               root = ./.;
               fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
@@ -100,7 +96,7 @@
           in
           pkgs.mkShell {
             inherit (preCommitCheck) shellHook;
-            packages = config.buildInputs ++ preCommitCheck.enabledPackages;
+            packages = config.packages ++ preCommitCheck.enabledPackages;
           };
         shells = lib.mapAttrs genShell (configs pkgs);
         checks = lib.mapAttrs genBits (configs pkgs);
