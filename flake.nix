@@ -2,6 +2,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    git-hooks = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -9,6 +13,7 @@
       self,
       nixpkgs,
       flake-utils,
+      git-hooks,
       ...
     }:
     let
@@ -66,15 +71,42 @@
           set -o errexit
           ${lib.getExe pkgs.git} ls-files | ${lib.getExe pkgs.gnugrep} -E ".*\.(pl)$" | xargs ${lib.getExe' pkgs.emacs "ctags"} -l prolog
         '';
+        genPreCommitCheck =
+          config:
+          git-hooks.lib.${system}.run {
+            src = ./.;
+            hooks = {
+              prolog-tests = {
+                enable = true;
+                name = "Run Prolog tests";
+                entry = lib.getExe (genTestScript config);
+                files = "(\\.pl$|flake\\.lock)";
+                pass_filenames = false;
+              };
+              prolog-ctags = {
+                enable = true;
+                name = "Generate Prolog ctags file";
+                entry = lib.getExe generateCtagsScript;
+                files = "\\.pl$";
+                pass_filenames = false;
+              };
+              prolog-etags = {
+                enable = true;
+                name = "Generate Prolog etags file";
+                entry = lib.getExe generateEtagsScript;
+                files = "\\.pl$";
+                pass_filenames = false;
+              };
+            };
+          };
         genShell =
           name: config:
+          let
+            preCommitCheck = genPreCommitCheck config;
+          in
           pkgs.mkShell {
-            packages = config.buildInputs ++ [
-              pkgs.pre-commit
-              (genTestScript config)
-              generateCtagsScript
-              generateEtagsScript
-            ];
+            inherit (preCommitCheck) shellHook;
+            packages = config.buildInputs ++ preCommitCheck.enabledPackages;
           };
         lib = pkgs.lib;
         shells = lib.mapAttrs genShell (configs pkgs);
