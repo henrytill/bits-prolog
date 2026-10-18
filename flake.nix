@@ -78,7 +78,7 @@
           pass_filenames = false;
         };
         genShell =
-          name: config:
+          _: config:
           let
             preCommitCheck = git-hooks.lib.${system}.run {
               src = ./.;
@@ -95,7 +95,7 @@
           };
         shells = lib.mapAttrs genShell configs;
         genCheck =
-          name: config:
+          _: config:
           git-hooks.lib.${system}.run {
             src = lib.fileset.toSource {
               root = ./.;
