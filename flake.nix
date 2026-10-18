@@ -116,6 +116,7 @@
       in
       {
         inherit checks;
+        formatter = pkgs.nixfmt-tree;
         devShells = shells // {
           default = shells.bits-swipl;
         };
