@@ -61,6 +61,7 @@
           inherit system;
           overlays = [ overlay ];
         };
+        lib = pkgs.lib;
         genTestScript =
           config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
@@ -108,7 +109,6 @@
             inherit (preCommitCheck) shellHook;
             packages = config.buildInputs ++ preCommitCheck.enabledPackages;
           };
-        lib = pkgs.lib;
         shells = lib.mapAttrs genShell (configs pkgs);
         checks = lib.mapAttrs (name: _: pkgs.${name}) (configs pkgs);
       in
