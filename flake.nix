@@ -62,35 +62,30 @@
             ];
             text = "git ls-files -z -- '*.pl' | xargs -0 --no-run-if-empty ${tool} -l prolog";
           };
-        genHooks = config: {
-          prolog-tests = {
-            enable = true;
-            name = "Run Prolog tests";
-            entry = lib.getExe (genTestScript config);
-            files = "(\\.pl$|flake\\.lock)";
-            pass_filenames = false;
-          };
-          prolog-ctags = {
-            enable = true;
-            name = "Generate Prolog ctags file";
-            entry = lib.getExe (genTagsScript "ctags");
-            files = "\\.pl$";
-            pass_filenames = false;
-          };
-          prolog-etags = {
-            enable = true;
-            name = "Generate Prolog etags file";
-            entry = lib.getExe (genTagsScript "etags");
-            files = "\\.pl$";
-            pass_filenames = false;
-          };
+        testHook = config: {
+          enable = true;
+          name = "Run Prolog tests";
+          entry = lib.getExe (genTestScript config);
+          files = "(\\.pl$|flake\\.lock)";
+          pass_filenames = false;
+        };
+        tagHook = tool: {
+          enable = true;
+          name = "Generate Prolog ${tool} file";
+          entry = lib.getExe (genTagsScript tool);
+          files = "\\.pl$";
+          pass_filenames = false;
         };
         genShell =
           name: config:
           let
             preCommitCheck = git-hooks.lib.${system}.run {
               src = ./.;
-              hooks = genHooks config;
+              hooks = {
+                prolog-tests = testHook config;
+                prolog-ctags = tagHook "ctags";
+                prolog-etags = tagHook "etags";
+              };
             };
           in
           pkgs.mkShell {
@@ -105,7 +100,7 @@
               root = ./.;
               fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
             };
-            hooks = { inherit (genHooks config) prolog-tests; };
+            hooks.prolog-tests = testHook config;
           };
         checks = lib.mapAttrs genCheck configs;
       in
