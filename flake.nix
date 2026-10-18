@@ -37,10 +37,10 @@
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
         genBits =
-          name:
-          { checkPhase, ... }:
+          name: config:
           pkgs.stdenvNoCC.mkDerivation {
-            inherit name checkPhase;
+            inherit name;
+            checkPhase = lib.getExe (genTestScript config);
             src = lib.fileset.toSource {
               root = ./.;
               fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
@@ -50,7 +50,12 @@
             installPhase = "touch $out";
           };
         genTestScript =
-          config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
+          config:
+          pkgs.writeShellApplication {
+            name = "test-bits";
+            runtimeInputs = config.packages;
+            text = config.checkPhase;
+          };
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
           set -o errexit
           ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "etags"} -l prolog
