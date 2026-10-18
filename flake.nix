@@ -47,9 +47,7 @@
             };
             dontBuild = true;
             doCheck = true;
-            installPhase = ''
-              mkdir "$out"
-            '';
+            installPhase = "touch $out";
           };
         genTestScript =
           config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
