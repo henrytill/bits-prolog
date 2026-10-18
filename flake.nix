@@ -10,7 +10,6 @@
 
   outputs =
     {
-      self,
       nixpkgs,
       flake-utils,
       git-hooks,
@@ -46,7 +45,10 @@
               buildInputs
               checkPhase
               ;
-            src = self;
+            src = lib.fileset.toSource {
+              root = ./.;
+              fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
+            };
             dontBuild = true;
             doCheck = true;
             installPhase = ''
