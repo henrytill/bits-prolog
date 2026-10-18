@@ -67,7 +67,7 @@
           name = "Run Prolog tests";
           entry = lib.getExe (genTestScript config);
           extraPackages = config.packages;
-          files = "(\\.pl$|flake\\.lock)";
+          files = "(\\.pl$|flake\\.(nix|lock))";
           pass_filenames = false;
         };
         tagHook = tool: {
