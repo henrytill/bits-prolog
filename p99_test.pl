@@ -68,14 +68,18 @@ tests([ test('my_last: basic',
              compress([a,a,a,a,b,c,c,a,a,d,e,e,e,e], [a,b,c,a,d,e]))
       ]).
 
-run_tests([]).
-run_tests([test(Name, Body)|Tests]) :-
-    test(Name, Body),
-    run_tests(Tests).
+run_tests([], Failed, Failed).
+run_tests([test(Name, Body)|Tests], Failed0, Failed) :-
+    ( test(Name, Body) ->
+      Failed1 = Failed0
+    ; Failed1 is Failed0 + 1
+    ),
+    run_tests(Tests, Failed1, Failed).
 
 test_all :-
     tests(T),
-    run_tests(T).
+    run_tests(T, 0, Failed),
+    Failed =:= 0.
 
 main :- test_all, halt(0).
 main :- halt(1).
