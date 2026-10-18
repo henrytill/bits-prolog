@@ -19,7 +19,7 @@
       configs = pkgs: {
         bits-gprolog = {
           packages = [ pkgs.gprolog ];
-          checkPhase = "${pkgs.lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main";
+          checkPhase = "${pkgs.lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main --query-goal 'halt(1)'";
         };
         bits-swipl = {
           packages = [ pkgs.swi-prolog ];
