@@ -36,9 +36,9 @@
               { errors=$(tpl p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
               if [ -n "$errors" ]; then
                 printf '%s\n' "$errors" >&2
-                if ${lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
-                  exit 1
-                fi
+              fi
+              if ${lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
+                exit 1
               fi
               exit "''${status:-0}"
             '';
