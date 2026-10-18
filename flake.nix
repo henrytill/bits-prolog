@@ -86,6 +86,7 @@
                 prolog-tests = testHook config;
                 prolog-ctags = tagHook "ctags";
                 prolog-etags = tagHook "etags";
+                nixfmt.enable = true;
               };
             };
           in
@@ -94,16 +95,24 @@
             packages = preCommitCheck.enabledPackages;
           };
         shells = lib.mapAttrs genShell configs;
+        sourcesWithExt =
+          ext:
+          lib.fileset.toSource {
+            root = ./.;
+            fileset = lib.fileset.fileFilter (file: file.hasExt ext) ./.;
+          };
         genCheck =
           _: config:
           git-hooks.lib.${system}.run {
-            src = lib.fileset.toSource {
-              root = ./.;
-              fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
-            };
+            src = sourcesWithExt "pl";
             hooks.prolog-tests = testHook config;
           };
-        checks = lib.mapAttrs genCheck configs;
+        checks = lib.mapAttrs genCheck configs // {
+          nixfmt = git-hooks.lib.${system}.run {
+            src = sourcesWithExt "nix";
+            hooks.nixfmt.enable = true;
+          };
+        };
       in
       {
         inherit checks;
