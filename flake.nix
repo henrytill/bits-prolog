@@ -51,14 +51,17 @@
             runtimeInputs = config.packages;
             text = config.testScript;
           };
-        generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
-          set -o errexit
-          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "etags"} -l prolog
-        '';
-        generateCtagsScript = pkgs.writeShellScriptBin "generate-ctags" ''
-          set -o errexit
-          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "ctags"} -l prolog
-        '';
+        genTagsScript =
+          tool:
+          pkgs.writeShellApplication {
+            name = "generate-${tool}";
+            runtimeInputs = [
+              pkgs.git
+              pkgs.findutils
+              pkgs.emacs-nox
+            ];
+            text = "git ls-files -z -- '*.pl' | xargs -0 --no-run-if-empty ${tool} -l prolog";
+          };
         genHooks = config: {
           prolog-tests = {
             enable = true;
@@ -70,14 +73,14 @@
           prolog-ctags = {
             enable = true;
             name = "Generate Prolog ctags file";
-            entry = lib.getExe generateCtagsScript;
+            entry = lib.getExe (genTagsScript "ctags");
             files = "\\.pl$";
             pass_filenames = false;
           };
           prolog-etags = {
             enable = true;
             name = "Generate Prolog etags file";
-            entry = lib.getExe generateEtagsScript;
+            entry = lib.getExe (genTagsScript "etags");
             files = "\\.pl$";
             pass_filenames = false;
           };
