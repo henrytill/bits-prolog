@@ -55,11 +55,11 @@
           config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
           set -o errexit
-          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs "etags"} -l prolog
+          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "etags"} -l prolog
         '';
         generateCtagsScript = pkgs.writeShellScriptBin "generate-ctags" ''
           set -o errexit
-          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs "ctags"} -l prolog
+          ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "ctags"} -l prolog
         '';
         genPreCommitCheck =
           config:
