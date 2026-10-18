@@ -15,37 +15,35 @@
       git-hooks,
       ...
     }:
-    let
-      configs = pkgs: {
-        bits-gprolog = {
-          packages = [ pkgs.gprolog ];
-          checkPhase = "${pkgs.lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main --query-goal 'halt(1)'";
-        };
-        bits-swipl = {
-          packages = [ pkgs.swi-prolog ];
-          checkPhase = "${pkgs.lib.getExe pkgs.swi-prolog} --on-error=halt -s p99_test.pl -g main";
-        };
-        bits-trealla = {
-          packages = [ pkgs.trealla ];
-          # tpl reports load errors only on stderr, and still exits 0
-          checkPhase = ''
-            { errors=$(${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
-            if [ -n "$errors" ]; then
-              printf '%s\n' "$errors" >&2
-              if ${pkgs.lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
-                exit 1
-              fi
-            fi
-            exit "''${status:-0}"
-          '';
-        };
-      };
-    in
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
+        configs = {
+          bits-gprolog = {
+            packages = [ pkgs.gprolog ];
+            checkPhase = "${lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main --query-goal 'halt(1)'";
+          };
+          bits-swipl = {
+            packages = [ pkgs.swi-prolog ];
+            checkPhase = "${lib.getExe pkgs.swi-prolog} --on-error=halt -s p99_test.pl -g main";
+          };
+          bits-trealla = {
+            packages = [ pkgs.trealla ];
+            # tpl reports load errors only on stderr, and still exits 0
+            checkPhase = ''
+              { errors=$(${lib.getExe pkgs.trealla} p99_test.pl -g main 2>&1 >&3 3>&-) || status=$?; } 3>&1
+              if [ -n "$errors" ]; then
+                printf '%s\n' "$errors" >&2
+                if ${lib.getExe pkgs.gnugrep} -q '^Error:' <<<"$errors"; then
+                  exit 1
+                fi
+              fi
+              exit "''${status:-0}"
+            '';
+          };
+        };
         genTestScript =
           config:
           pkgs.writeShellApplication {
@@ -96,7 +94,7 @@
             inherit (preCommitCheck) shellHook;
             packages = config.packages ++ preCommitCheck.enabledPackages;
           };
-        shells = lib.mapAttrs genShell (configs pkgs);
+        shells = lib.mapAttrs genShell configs;
         genCheck =
           name: config:
           git-hooks.lib.${system}.run {
@@ -106,7 +104,7 @@
             };
             hooks = { inherit (genHooks config) prolog-tests; };
           };
-        checks = lib.mapAttrs genCheck (configs pkgs);
+        checks = lib.mapAttrs genCheck configs;
       in
       {
         inherit checks;
