@@ -10,8 +10,11 @@
 write_test_result(passed, Name) :- write('PASSED: '), write(Name), nl.
 write_test_result(failed, Name) :- write('FAILED: '), write(Name), nl.
 
+write_test_error(Name, Error) :-
+    write('ERROR: '), write(Name), write(': '), writeq(Error), nl.
+
 test(Name, Body) :-
-    ( call(Body) ->
+    ( catch(Body, Error, (write_test_error(Name, Error), fail)) ->
       write_test_result(passed, Name)
     ; write_test_result(failed, Name),
       fail
