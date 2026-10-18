@@ -6,13 +6,19 @@
       url = "github:cachix/git-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-github-actions = {
+      url = "github:nix-community/nix-github-actions";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
+      self,
       nixpkgs,
       flake-utils,
       git-hooks,
+      nix-github-actions,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -121,5 +127,10 @@
           default = shells.bits-swipl;
         };
       }
-    );
+    )
+    // {
+      githubActions = nix-github-actions.lib.mkGithubMatrix {
+        checks = nixpkgs.lib.getAttrs [ "x86_64-linux" ] self.checks;
+      };
+    };
 }
