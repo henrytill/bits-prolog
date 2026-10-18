@@ -15,15 +15,15 @@
       configs = pkgs: {
         bits-gprolog = {
           buildInputs = [ pkgs.gprolog ];
-          checkPhase = "${pkgs.gprolog}/bin/gprolog --consult-file p99_test.pl --query-goal main";
+          checkPhase = "${pkgs.lib.getExe' pkgs.gprolog "gprolog"} --consult-file p99_test.pl --query-goal main";
         };
         bits-swipl = {
           buildInputs = [ pkgs.swi-prolog ];
-          checkPhase = "${pkgs.swi-prolog}/bin/swipl -s p99_test.pl -g main";
+          checkPhase = "${pkgs.lib.getExe pkgs.swi-prolog} -s p99_test.pl -g main";
         };
         bits-trealla = {
           buildInputs = [ pkgs.trealla ];
-          checkPhase = "${pkgs.trealla}/bin/tpl p99_test.pl -g main";
+          checkPhase = "${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main";
         };
       };
       overlay =
@@ -60,11 +60,11 @@
           config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
           set -o errexit
-          ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/etags -l prolog
+          ${lib.getExe pkgs.git} ls-files | ${lib.getExe pkgs.gnugrep} -E ".*\.(pl)$" | xargs ${lib.getExe' pkgs.emacs "etags"} -l prolog
         '';
         generateCtagsScript = pkgs.writeShellScriptBin "generate-ctags" ''
           set -o errexit
-          ${pkgs.git}/bin/git ls-files | ${pkgs.gnugrep}/bin/grep -E ".*\.(pl)$" | xargs ${pkgs.emacs}/bin/ctags -l prolog
+          ${lib.getExe pkgs.git} ls-files | ${lib.getExe pkgs.gnugrep} -E ".*\.(pl)$" | xargs ${lib.getExe' pkgs.emacs "ctags"} -l prolog
         '';
         genShell =
           name: config:
