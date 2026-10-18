@@ -36,19 +36,6 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
-        genBits =
-          name: config:
-          pkgs.stdenvNoCC.mkDerivation {
-            inherit name;
-            checkPhase = lib.getExe (genTestScript config);
-            src = lib.fileset.toSource {
-              root = ./.;
-              fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
-            };
-            dontBuild = true;
-            doCheck = true;
-            installPhase = "touch $out";
-          };
         genTestScript =
           config:
           pkgs.writeShellApplication {
@@ -64,45 +51,52 @@
           set -o errexit
           ${lib.getExe pkgs.git} ls-files -z -- '*.pl' | ${lib.getExe' pkgs.findutils "xargs"} -0 --no-run-if-empty ${lib.getExe' pkgs.emacs-nox "ctags"} -l prolog
         '';
-        genPreCommitCheck =
-          config:
-          git-hooks.lib.${system}.run {
-            src = ./.;
-            hooks = {
-              prolog-tests = {
-                enable = true;
-                name = "Run Prolog tests";
-                entry = lib.getExe (genTestScript config);
-                files = "(\\.pl$|flake\\.lock)";
-                pass_filenames = false;
-              };
-              prolog-ctags = {
-                enable = true;
-                name = "Generate Prolog ctags file";
-                entry = lib.getExe generateCtagsScript;
-                files = "\\.pl$";
-                pass_filenames = false;
-              };
-              prolog-etags = {
-                enable = true;
-                name = "Generate Prolog etags file";
-                entry = lib.getExe generateEtagsScript;
-                files = "\\.pl$";
-                pass_filenames = false;
-              };
-            };
+        genHooks = config: {
+          prolog-tests = {
+            enable = true;
+            name = "Run Prolog tests";
+            entry = lib.getExe (genTestScript config);
+            files = "(\\.pl$|flake\\.lock)";
+            pass_filenames = false;
           };
+          prolog-ctags = {
+            enable = true;
+            name = "Generate Prolog ctags file";
+            entry = lib.getExe generateCtagsScript;
+            files = "\\.pl$";
+            pass_filenames = false;
+          };
+          prolog-etags = {
+            enable = true;
+            name = "Generate Prolog etags file";
+            entry = lib.getExe generateEtagsScript;
+            files = "\\.pl$";
+            pass_filenames = false;
+          };
+        };
         genShell =
           name: config:
           let
-            preCommitCheck = genPreCommitCheck config;
+            preCommitCheck = git-hooks.lib.${system}.run {
+              src = ./.;
+              hooks = genHooks config;
+            };
           in
           pkgs.mkShell {
             inherit (preCommitCheck) shellHook;
             packages = config.packages ++ preCommitCheck.enabledPackages;
           };
         shells = lib.mapAttrs genShell (configs pkgs);
-        checks = lib.mapAttrs genBits (configs pkgs);
+        genCheck =
+          name: config:
+          git-hooks.lib.${system}.run {
+            src = lib.fileset.toSource {
+              root = ./.;
+              fileset = lib.fileset.fileFilter (file: file.hasExt "pl") ./.;
+            };
+            hooks = { inherit (genHooks config) prolog-tests; };
+          };
+        checks = lib.mapAttrs genCheck (configs pkgs);
       in
       {
         inherit checks;
