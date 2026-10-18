@@ -66,6 +66,7 @@
           enable = true;
           name = "Run Prolog tests";
           entry = lib.getExe (genTestScript config);
+          extraPackages = config.packages;
           files = "(\\.pl$|flake\\.lock)";
           pass_filenames = false;
         };
@@ -90,7 +91,7 @@
           in
           pkgs.mkShell {
             inherit (preCommitCheck) shellHook;
-            packages = config.packages ++ preCommitCheck.enabledPackages;
+            packages = preCommitCheck.enabledPackages;
           };
         shells = lib.mapAttrs genShell configs;
         genCheck =
