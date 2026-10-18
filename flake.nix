@@ -31,37 +31,28 @@
           checkPhase = "${pkgs.lib.getExe pkgs.trealla} p99_test.pl -g main";
         };
       };
-      overlay =
-        final: prev:
-        let
-          src = self;
-          genBits =
-            name:
-            { buildInputs, checkPhase }:
-            final.stdenvNoCC.mkDerivation {
-              inherit
-                name
-                src
-                buildInputs
-                checkPhase
-                ;
-              dontBuild = true;
-              doCheck = true;
-              installPhase = ''
-                mkdir "$out"
-              '';
-            };
-        in
-        (prev.lib.mapAttrs genBits (configs final));
     in
     flake-utils.lib.eachDefaultSystem (
       system:
       let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ overlay ];
-        };
+        pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
+        genBits =
+          name:
+          { buildInputs, checkPhase }:
+          pkgs.stdenvNoCC.mkDerivation {
+            inherit
+              name
+              buildInputs
+              checkPhase
+              ;
+            src = self;
+            dontBuild = true;
+            doCheck = true;
+            installPhase = ''
+              mkdir "$out"
+            '';
+          };
         genTestScript =
           config: pkgs.writeShellScriptBin "test-bits" ("set -o errexit\n" + config.checkPhase);
         generateEtagsScript = pkgs.writeShellScriptBin "generate-etags" ''
@@ -110,7 +101,7 @@
             packages = config.buildInputs ++ preCommitCheck.enabledPackages;
           };
         shells = lib.mapAttrs genShell (configs pkgs);
-        checks = lib.mapAttrs (name: _: pkgs.${name}) (configs pkgs);
+        checks = lib.mapAttrs genBits (configs pkgs);
       in
       {
         inherit checks;
