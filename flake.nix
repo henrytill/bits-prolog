@@ -10,6 +10,11 @@
       url = "github:nix-community/nix-github-actions";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # The Prolog parser (universal-ctags/ctags#4249) is not yet in a release
+    ctags-src = {
+      url = "github:universal-ctags/ctags/82494361bb3e7d4f7cf1d2bdc0d0e9001c926e45";
+      flake = false;
+    };
   };
 
   outputs =
@@ -19,6 +24,7 @@
       flake-utils,
       git-hooks,
       nix-github-actions,
+      ctags-src,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -26,6 +32,10 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         lib = pkgs.lib;
+        universal-ctags = pkgs.universal-ctags.overrideAttrs {
+          version = "0-unstable-${builtins.substring 0 8 ctags-src.lastModifiedDate}";
+          src = ctags-src;
+        };
         configs = {
           bits-gprolog = {
             packages = [ pkgs.gprolog ];
@@ -57,17 +67,22 @@
             runtimeInputs = config.packages;
             text = config.testScript;
           };
-        genTagsScript =
-          tool:
-          pkgs.writeShellApplication {
-            name = "generate-${tool}";
-            runtimeInputs = [
-              pkgs.git
-              pkgs.findutils
-              pkgs.emacs-nox
-            ];
-            text = "git ls-files -z -- '*.pl' | xargs -0 --no-run-if-empty ${tool} -l prolog";
-          };
+        tagsScript = pkgs.writeShellApplication {
+          name = "generate-tags";
+          runtimeInputs = [
+            pkgs.git
+            universal-ctags
+          ];
+          text = ''
+            # lastpipe keeps a git failure under pipefail
+            shopt -s lastpipe
+            git ls-files -z -- '*.pl' | mapfile -d "" files
+            if [ "''${#files[@]}" -gt 0 ]; then
+              ctags "''${files[@]}"
+              ctags -e "''${files[@]}"
+            fi
+          '';
+        };
         testHook = config: {
           enable = true;
           name = "Run Prolog tests";
@@ -76,11 +91,11 @@
           files = "(\\.pl$|flake\\.(nix|lock))";
           pass_filenames = false;
         };
-        tagHook = tool: {
+        tagsHook = {
           enable = true;
-          name = "Generate Prolog ${tool} file";
-          entry = lib.getExe (genTagsScript tool);
-          files = "\\.pl$";
+          name = "Generate Prolog tags files";
+          entry = lib.getExe tagsScript;
+          files = "(\\.pl$|flake\\.(nix|lock))";
           pass_filenames = false;
         };
         genShell =
@@ -90,8 +105,7 @@
               src = ./.;
               hooks = {
                 prolog-tests = testHook config;
-                prolog-ctags = tagHook "ctags";
-                prolog-etags = tagHook "etags";
+                prolog-tags = tagsHook;
                 nixfmt.enable = true;
               };
             };

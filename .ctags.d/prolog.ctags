@@ -1,0 +1,3 @@
+# .pl is ambiguous between Perl and Prolog; in this repo it is Prolog
+--map-Perl=-.pl
+--map-Prolog=+.pl

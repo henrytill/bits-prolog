@@ -1,5 +1,22 @@
 {
   "nodes": {
+    "ctags-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1791449375,
+        "narHash": "sha256-EDd/ofMjpvwYn+DmsgiLDF838WSnf2rZV0OUYHxUkIg=",
+        "owner": "universal-ctags",
+        "repo": "ctags",
+        "rev": "82494361bb3e7d4f7cf1d2bdc0d0e9001c926e45",
+        "type": "github"
+      },
+      "original": {
+        "owner": "universal-ctags",
+        "repo": "ctags",
+        "rev": "82494361bb3e7d4f7cf1d2bdc0d0e9001c926e45",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -93,6 +110,7 @@
     },
     "root": {
       "inputs": {
+        "ctags-src": "ctags-src",
         "flake-utils": "flake-utils",
         "git-hooks": "git-hooks",
         "nix-github-actions": "nix-github-actions",
