@@ -118,10 +118,10 @@ test_all :-
     run_tests(T, 0, Failed),
     Failed =:= 0.
 
-%%  main is det.
+%%  main.
 %
 %   Run every test, then halt with status 0 if they all passed, or 1
-%   otherwise.
+%   otherwise. Does not return.
 
 main :- test_all, halt(0).
 main :- halt(1).
