@@ -32,7 +32,7 @@ write_test_result(failed, Name) :- write('FAILED: '), write(Name), nl.
 write_test_error(Name, Error) :-
     write('ERROR: '), write(Name), write(': '), writeq(Error), nl.
 
-%%  test(+Name, :Body) is semidet.
+%%  test(+Name, +Body) is semidet.
 %
 %   Run Body once as test Name and print its result. Succeeds if Body
 %   succeeds; fails if Body fails or raises, printing the exception.
