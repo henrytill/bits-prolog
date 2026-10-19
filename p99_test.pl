@@ -1,7 +1,7 @@
 % -*- mode: prolog; -*-
 % vim: set ft=prolog:
 
-/** <module> P-99 tests
+/* P-99 tests
 
 Tests for the P-99 predicates, portable across GNU Prolog, SWI-Prolog and
 Trealla. GNU Prolog includes p99_core.pl directly; the others load it
